@@ -71,6 +71,14 @@ class Game extends React.Component {
     }
 
     jumpTo(step) {
+        // 清除所有样式
+        for (let i = 0; i < this.state.history.length; i++) {
+            const tempId = 'button' + i;
+            document.getElementById(tempId).style.fontWeight = '';
+        }
+        // 加粗点击的按钮字体
+        const id = 'button' + step;
+        document.getElementById(id).style.fontWeight = 'bold';
         this.setState({
             stepNumber: step,
             xIsNext: (step % 2) === 0,
@@ -83,10 +91,10 @@ class Game extends React.Component {
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
-            const desc = move ? 'Go to move #' + move + ',coordinate is ' + step.coordinate : 'Go to start';
+            let desc = move ? 'Go to move #' + move + ',coordinate is ' + step.coordinate : 'Go to start';
             return (
                 <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                    <button id={"button" + move} onClick={() => {this.jumpTo(move)}}>{desc}</button>
                 </li>
             )
         })
