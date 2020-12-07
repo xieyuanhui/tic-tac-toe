@@ -128,6 +128,8 @@ class Game extends React.Component {
         let status;
         if (winnerId) {
             status = 'Winner: ' + current.squares[winnerId[0]];
+        } else if(current.serialNum >= 9) {
+            status = 'No winner';
         } else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
@@ -141,7 +143,9 @@ class Game extends React.Component {
                 <div className="game-info">
                     <div>{status}</div>
                     <div>
-                        <button onClick={() => this.changeOrder()}>{this.state.order === 'asc' ? '降序排列' : '升序排列'}</button>
+                        <button onClick={() => this.changeOrder()}>
+                            {this.state.order === 'asc' ? '降序排列' : '升序排列'}
+                        </button>
                     </div>
                     <ol>{moves}</ol>
                 </div>
