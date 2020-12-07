@@ -39,11 +39,13 @@ class Game extends React.Component {
         super(props);
         this.state = {
             history: [{
+                serialNum: 0,
                 squares: Array(9).fill(null),
                 coordinate: null,
             }],
             stepNumber: 0,
             xIsNext: true,
+            order: null,
         }
     }
 
@@ -58,6 +60,7 @@ class Game extends React.Component {
         const coordinate = '(' + Math.floor(i / 3) + ',' + i % 3 + ')'
         this.setState({
             history: history.concat([{
+                serialNum: this.state.stepNumber + 1,
                 squares: squares,
                 coordinate: coordinate,
             }]),
@@ -81,16 +84,36 @@ class Game extends React.Component {
         })
     }
 
+    changeOrder() {
+        const order = this.state.order;
+        let history = this.state.history;
+        if (order === 'asc') {
+            const compare = (a, b) => {return a.serialNum - b.serialNum;};
+            history.sort(compare);
+        } else {
+            const compareReverse = (a, b) => {return b.serialNum - a.serialNum;};
+            history.sort(compareReverse);
+        }
+        this.setState({
+            order: order === 'asc' ? 'desc' : 'asc',
+            history: history,
+        });
+    }
+
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
+            const selectItem = move;
+            if (this.state.order === 'asc') {
+                move = this.state.history.length - move - 1;
+            }
             let desc = move ? 'Go to move #' + move + ',coordinate is ' + step.coordinate : 'Go to start';
             return (
-                <li key={move}>
-                    <button id={"button" + move} onClick={() => {this.jumpTo(move)}}>{desc}</button>
+                <li key={selectItem}>
+                    <button id={"button" + selectItem} onClick={() => {this.jumpTo(selectItem)}}>{desc}</button>
                 </li>
             )
         })
@@ -110,6 +133,9 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
+                    <div>
+                        <button onClick={() => this.changeOrder()}>{this.state.order === 'asc' ? '降序排列' : '升序排列'}</button>
+                    </div>
                     <ol>{moves}</ol>
                 </div>
             </div>
