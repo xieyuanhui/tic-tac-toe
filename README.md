@@ -12,6 +12,8 @@ React官网三连棋例子
 + 每当有人获胜时，高亮显示连成一线的 3 颗棋子
 + 当无人获胜时，显示一个平局的消息
 
+### 官网功能全部完成
+
 ## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
