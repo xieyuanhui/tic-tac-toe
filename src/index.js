@@ -2,6 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+/**
+ * 棋盘单元格，每个单元格是一个按钮
+ *
+ * @param props
+ * @constructor
+ */
 function Square(props) {
     return (
         <button className={props.selected ? "winSquare" : "square"} onClick={props.onClick}>
@@ -10,7 +16,15 @@ function Square(props) {
     );
 }
 
+/**
+ * 棋盘，由九个单元格组成
+ */
 class Board extends React.Component {
+    /**
+     * 渲染单元格
+     *
+     * @param i 单元格序号
+     */
     renderSquare(i) {
         const winnerId = this.props.winnerId;
         let selected = false;
@@ -19,9 +33,12 @@ class Board extends React.Component {
         }
         return <Square key={i} selected={selected}
                        value={this.props.squares[i]}
-                       onClick={() => this.props.onClick(i)} />;
+                       onClick={() => this.props.onClick(i)}/>;
     }
 
+    /**
+     * 渲染页面
+     */
     render() {
         let grids = [];
         const rows = 3;
@@ -41,7 +58,15 @@ class Board extends React.Component {
     }
 }
 
+/**
+ * 整个游戏界面
+ */
 class Game extends React.Component {
+    /**
+     * 构造函数
+     *
+     * @param props
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -56,6 +81,11 @@ class Game extends React.Component {
         }
     }
 
+    /**
+     * 点击单元格处理
+     *
+     * @param i
+     */
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
@@ -76,6 +106,11 @@ class Game extends React.Component {
         });
     }
 
+    /**
+     * 点击历史记录跳转
+     *
+     * @param step
+     */
     jumpTo(step) {
         // 清除所有样式
         for (let i = 0; i < this.state.history.length; i++) {
@@ -91,19 +126,13 @@ class Game extends React.Component {
         })
     }
 
+    /**
+     * 转换历史记录排列顺序
+     */
     changeOrder() {
         const order = this.state.order;
-        let history = this.state.history;
-        if (order === 'asc') {
-            const compare = (a, b) => {return a.serialNum - b.serialNum;};
-            history.sort(compare);
-        } else {
-            const compareReverse = (a, b) => {return b.serialNum - a.serialNum;};
-            history.sort(compareReverse);
-        }
         this.setState({
             order: order === 'asc' ? 'desc' : 'asc',
-            history: history,
         });
     }
 
@@ -113,14 +142,15 @@ class Game extends React.Component {
         const winnerId = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
-            const selectItem = move;
             if (this.state.order === 'asc') {
                 move = this.state.history.length - move - 1;
             }
-            let desc = move ? 'Go to move #' + move + ',coordinate is ' + step.coordinate : 'Go to start';
+            let desc = move ? 'Go to move #' + move + ',coordinate is ' + history[move].coordinate : 'Go to start';
             return (
-                <li key={selectItem}>
-                    <button id={"button" + selectItem} onClick={() => {this.jumpTo(selectItem)}}>{desc}</button>
+                <li key={move}>
+                    <button id={"button" + move} onClick={() => {
+                        this.jumpTo(move)
+                    }}>{desc}</button>
                 </li>
             )
         })
@@ -128,7 +158,7 @@ class Game extends React.Component {
         let status;
         if (winnerId) {
             status = 'Winner: ' + current.squares[winnerId[0]];
-        } else if(current.serialNum >= 9) {
+        } else if (current.serialNum >= 9) {
             status = 'No winner';
         } else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
@@ -157,10 +187,16 @@ class Game extends React.Component {
 // ========================================
 
 ReactDOM.render(
-    <Game />,
+    <Game/>,
     document.getElementById('root')
 );
 
+/**
+ * 判断游戏胜者
+ *
+ * @param squares
+ * @returns {null|number[]}
+ */
 function calculateWinner(squares) {
     const lines = [
         [0, 1, 2],
